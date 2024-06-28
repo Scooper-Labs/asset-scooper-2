@@ -8,7 +8,7 @@ const deployAssetScooper = async ({ getNamedAccounts, deployments }) => {
     const { deployer } = await getNamedAccounts();
     const chainId = network.config.chainId;
     // const UNISWAP_V2_ROUTER = "0x4752ba5DBc23f44D87826276BF6Fd6b1C372aD24";
-    const args = [];
+    let args = [];
 
     const assetScooper = await deploy("AssetScooper", {
         from: deployer,
