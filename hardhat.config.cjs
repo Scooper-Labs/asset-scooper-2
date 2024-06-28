@@ -26,7 +26,7 @@ module.exports = {
             gasPrice: 8000000000,
             accounts: [PRIVATE_KEY],
             chainId: 8453,
-            blockConfirmations: 1,
+            blockConfirmations: 6,
             // ignition: {
             //     maxFeePerGasLimit: 50_000_000_000,
             //     maxPriorityFeePerGas: 2_000_000_000,
