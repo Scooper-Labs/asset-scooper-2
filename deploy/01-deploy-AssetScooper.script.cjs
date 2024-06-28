@@ -7,22 +7,22 @@ const deployAssetScooper = async ({ getNamedAccounts, deployments }) => {
     const { deploy, log } = deployments;
     const { deployer } = await getNamedAccounts();
     const chainId = network.config.chainId;
-    const UNISWAP_ROUTER_V2 = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D";
-
-    const args = [UNISWAP_ROUTER_V2];
+    // const UNISWAP_V2_ROUTER = "0x4752ba5DBc23f44D87826276BF6Fd6b1C372aD24";
+    const args = [];
 
     const assetScooper = await deploy("AssetScooper", {
         from: deployer,
+        gasLimit: 5000000,
         args: args,
         log: true,
         blockConfirmations: network.config.blockConfirmations
     });
 
-    log("Deploying..................................................")
-    log("...........................................................")
+    log("Deploying..................................................");
+    log("...........................................................");
     log(assetScooper.address);
 
-    if (!developmentChains.includes(network.name) && chainId == 8453 && ETHERSCAN_APIKEY) {
+    if (!chainId && (chainId == 8453) && ETHERSCAN_APIKEY) {
         await verify(assetScooper.address, args);
     }
 }

@@ -5,6 +5,7 @@ pragma solidity 0.8.20;
 import '@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol';
 import '@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol';
 import '@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol';
+import './Interfaces/IWETH.sol';
 import './Lib/TransferHelper.sol';
 import 'solady/src/utils/ReentrancyGuard.sol';
   
@@ -12,7 +13,7 @@ contract AssetScooper is ReentrancyGuard {
 
     address private immutable i_owner;
 
-    address private immutable WETH;
+    IWETH private immutable WETH;
 
     IUniswapV2Router02 private immutable i_uniswapV2Router;
 
@@ -37,11 +38,11 @@ contract AssetScooper is ReentrancyGuard {
     error AssetScooper_PairDoesNotExist();
     error AssetScooper__InsufficientBalance();
 
-    constructor(address _router) {
+    constructor() {
         i_owner = msg.sender;
-        i_uniswapV2Router = IUniswapV2Router02(_router);
-        i_uniswapV2Factory = IUniswapV2Factory(i_uniswapV2Router.factory());
-        WETH = i_uniswapV2Router.WETH();
+        i_uniswapV2Router = IUniswapV2Router02(0x4752ba5DBc23f44D87826276BF6Fd6b1C372aD24);
+        i_uniswapV2Factory = IUniswapV2Factory(0x8909Dc15e40173Ff4699343b6eB8132c65e18eC6);
+        WETH = IWETH(0x4200000000000000000000000000000000000006);
     }
 
     function owner() public view returns (address) {
@@ -63,7 +64,7 @@ contract AssetScooper is ReentrancyGuard {
     }
 
     function _checkIfPairExists(address tokenAddress) internal view returns (bool) {
-        (bool success, bytes memory data) = address(i_uniswapV2Factory).staticcall(abi.encodeWithSignature("getPair(address,address)", tokenAddress, WETH));
+        (bool success, bytes memory data) = address(i_uniswapV2Factory).staticcall(abi.encodeWithSignature("getPair(address,address)", tokenAddress, address(WETH)));
         if(!success) revert AssetScooper_PairDoesNotExist();
         address pairAddress = abi.decode(data, (address));
         return pairAddress != address(0);
@@ -76,10 +77,10 @@ contract AssetScooper is ReentrancyGuard {
         tokenAmount = (tokenBalance * (10 ** (18 - tokenDecimals))) / 1;
     }
 
-    function _getTokenBalance(address token, address _owner) internal view returns (uint256) {
+    function _getTokenBalance(address token, address _owner) internal view returns (uint256 tokenBalance) {
         (bool success, bytes memory data) = token.staticcall(abi.encodeWithSignature("balanceOf(address)", _owner));
         if(!success) revert AssetScooper__UnsuccessfulBalanceCall();
-        return abi.decode(data, (uint256));
+        tokenBalance = abi.decode(data, (uint256));
     }
 
     function sweepTokens(address[] calldata tokenAddress, uint256 minAmountOut) public nonReentrant {
@@ -98,7 +99,7 @@ contract AssetScooper is ReentrancyGuard {
     function _swap(address tokenAddr, uint256 minAmountOut) internal nonReentrant {
 
         if(tokenAddr == address(0)) revert AssetScooper__AddressZero();
-        if(tokenAddr == WETH) revert AssetScooper__WethToken();
+        if(tokenAddr == address(WETH)) revert AssetScooper__WethToken();
 
         if(!_checkIfERC20Token(tokenAddr)) revert AssetScooper__UnsupportedToken();
         if(!_checkIfPairExists(tokenAddr)) revert AssetScooper_PairDoesNotExist();
@@ -114,7 +115,7 @@ contract AssetScooper is ReentrancyGuard {
 
         address[] memory path = new address[](2);
         path[0] = tokenAddr;
-        path[1] = WETH;
+        path[1] = address(WETH);
         uint[] memory amountsOut = i_uniswapV2Router.getAmountsOut(tokenBalance, path);
 
         if(amountsOut[1] <= MINIMUM_LIQUIDITY) revert AssetScooper__InsufficientLiquidity();
