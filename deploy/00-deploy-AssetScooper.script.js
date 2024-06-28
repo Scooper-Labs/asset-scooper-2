@@ -1,6 +1,6 @@
 const { network, ethers } = require("hardhat");
-const { verify } = require('../utils/verify');
-const { developmentChains } = require("../helper-hardhat-config");
+const { verify } = require('../utils/verify.js');
+const { developmentChains } = require("../helper-hardhat-config.cjs");
 const { ETHERSCAN_APIKEY } = process.env || "";
 
 const deployAssetScooper = async ({ getNamedAccounts, deployments }) => {
