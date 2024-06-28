@@ -22,10 +22,10 @@ module.exports = {
     networks: {
         base: {
             url: BASE_RPC_URL || "",
-            gasPrice: 3000000000,
+            gasPrice: 1000000000,
             accounts: [PRIVATE_KEY],
             chainId: 8453,
-            blockConfirmations: 6
+            blockConfirmations: 1
         }
     },
     etherscan: {
