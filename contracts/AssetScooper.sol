@@ -82,7 +82,7 @@ contract AssetScooper is ReentrancyGuard {
         return abi.decode(data, (uint256));
     }
 
-    function sweepTokens(address[] calldata tokenAddress, uint256 minAmountOut) public {
+    function sweepTokens(address[] calldata tokenAddress, uint256 minAmountOut) public nonReentrant {
         if(tokenAddress.length == 0) revert AssetScooper__ZeroLengthArray();
         if(msg.sender == address(0)) revert AssetScooper__AddressZero();
 
