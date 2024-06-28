@@ -20,7 +20,7 @@ contract AssetScooper is ReentrancyGuard {
 
     string private constant i_version = "1.0.0";
 
-    uint public constant MINIMUM_LIQUIDITY = 10**3;
+    uint private constant MINIMUM_LIQUIDITY = 10**3;
 
     bytes4 private constant interfaceId = 0x01ffc9a7;
 

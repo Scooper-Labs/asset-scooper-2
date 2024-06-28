@@ -26,10 +26,10 @@ module.exports = {
             accounts: [PRIVATE_KEY],
             chainId: 8453,
             blockConfirmations: 1,
-            ignition: {
-                maxFeePerGasLimit: 50_000_000_000n,
-                maxPriorityFeePerGas: 2_000_000_000n,
-            },
+            // ignition: {
+            //     maxFeePerGasLimit: 50_000_000_000n,
+            //     maxPriorityFeePerGas: 2_000_000_000n,
+            // },
         }
     },
     etherscan: {
