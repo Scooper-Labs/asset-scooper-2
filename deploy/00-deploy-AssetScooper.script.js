@@ -22,9 +22,9 @@ const deployAssetScooper = async ({ getNamedAccounts, deployments }) => {
     log("...........................................................")
     log(assetScooper.address);
 
-    if (!developmentChains.includes(network.name) && chainId == 8453 && ETHERSCAN_APIKEY) {
-        await verify(assetScooper.address, args);
-    }
+    // if (!developmentChains.includes(network.name) && chainId == 8453 && ETHERSCAN_APIKEY) {
+    //     await verify(assetScooper.address, args);
+    // }
 }
 
 module.exports.default = deployAssetScooper;
