@@ -25,7 +25,11 @@ module.exports = {
             gasPrice: 1000000000,
             accounts: [PRIVATE_KEY],
             chainId: 8453,
-            blockConfirmations: 1
+            blockConfirmations: 1,
+            ignition: {
+                maxFeePerGasLimit: 50_000_000_000n,
+                maxPriorityFeePerGas: 2_000_000_000n,
+            },
         }
     },
     etherscan: {
