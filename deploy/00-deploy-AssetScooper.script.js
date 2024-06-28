@@ -1,4 +1,4 @@
-const { network } = require("hardhat");
+const { network, ethers } = require("hardhat");
 const { verify } = require('../utils/verify');
 const { developmentChains } = require("../helper-hardhat-config");
 const { ETHERSCAN_APIKEY } = process.env || "";
@@ -22,9 +22,13 @@ const deployAssetScooper = async ({ getNamedAccounts, deployments }) => {
     log("...........................................................")
     log(assetScooper.address);
 
-    if (!developmentChains.includes(network.name) && chainId == 8453 && ETHERSCAN_APIKEY) {
-        await verify(assetScooper.address, args);
-    }
+    // if (!developmentChains.includes(network.name) && chainId == 8453 && ETHERSCAN_APIKEY) {
+    //     await verify(assetScooper.address, args);
+    // }
+}
+
+const interact = async () => {
+
 }
 
 module.exports.default = deployAssetScooper;
