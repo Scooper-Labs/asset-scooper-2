@@ -1,5 +1,5 @@
 const { network, ethers } = require("hardhat");
-const { verify } = require('../utils/verify.js');
+const { verify } = require('../utils/verify.cjs');
 const { developmentChains } = require("../helper-hardhat-config.cjs");
 const { ETHERSCAN_APIKEY } = process.env || "";
 

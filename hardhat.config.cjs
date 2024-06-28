@@ -22,13 +22,14 @@ module.exports = {
     networks: {
         base: {
             url: BASE_RPC_URL || "",
-            gasPrice: 1000000000,
+            gas: 2100000,
+            gasPrice: 8000000000,
             accounts: [PRIVATE_KEY],
             chainId: 8453,
             blockConfirmations: 1,
             // ignition: {
-            //     maxFeePerGasLimit: 50_000_000_000n,
-            //     maxPriorityFeePerGas: 2_000_000_000n,
+            //     maxFeePerGasLimit: 50_000_000_000,
+            //     maxPriorityFeePerGas: 2_000_000_000,
             // },
         }
     },
