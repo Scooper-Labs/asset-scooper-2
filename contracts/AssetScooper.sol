@@ -86,16 +86,13 @@ contract AssetScooper is ReentrancyGuard {
 
             address pairAddress = UniswapV2Library.pairFor(factory, tokenAddr, weth);
 
-            _swap(pairAddress, minimumOutputAmount);
+            totalEth += _swap(pairAddress, minimumOutputAmount);
         }
 
-        totalEth = address
-        
-        (bool success, /*bytes memory data*/) = payable(msg.sender).call{value: totalEth}(new bytes(0));
-        if(!success) revert AssetScooper__UnsuccessfulSwapTx();
+        TransferHelper.safeTransferETH(msg.sender, totalEth);
     }
 
-    function _swap(address pairAddress, uint256 minimumOutputAmount) internal nonReentrant returns(uint256) {
+    function _swap(address pairAddress, uint256 minimumOutputAmount) internal nonReentrant returns(uint256 amountOut) {
         IUniswapV2Pair pair = IUniswapV2Pair(pairAddress);
 
         address tokenA = pair.token0();
@@ -115,7 +112,6 @@ contract AssetScooper is ReentrancyGuard {
 
         (uint reserveA, uint reserveB) = UniswapV2Library.getReserves(pair.factory(), tokenA, tokenB);
 
-        uint256 amountOut;
         uint256 pairBalanceA = _getTokenBalance(tokenA, pairAddress);
         uint256 pairBalanceB = _getTokenBalance(tokenB, pairAddress);
 
@@ -128,7 +124,7 @@ contract AssetScooper is ReentrancyGuard {
         TransferHelper.safeTransferFrom(tokenA, msg.sender, pairAddress, amountIn);
 
         if (pairBalanceB > pairBalanceA) {
-            pair.swap(0, amountOut, msg.sender, new bytes(0));
+            pair.swap(0, amountOut, address(this), new bytes(0));
         }
 
         emit TokenSwapped(tokenA, tokenB, amountIn, amountOut);

@@ -13,7 +13,6 @@ const deployAssetScooper = async ({ getNamedAccounts, deployments }) => {
 
     const assetScooper = await deploy("AssetScooper", {
         from: deployer,
-        gasLimit: 5000000,
         args: args,
         log: true,
         blockConfirmations: network.config.blockConfirmations

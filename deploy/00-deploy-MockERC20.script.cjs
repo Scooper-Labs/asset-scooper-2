@@ -13,7 +13,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
 
         await deploy("MOCKERC20", {
             from: deployer,
-            gasLimit: 5000000,
+            // gasLimit: 5000000,
             log: true,
             args: args,
             waitConfirmations: network.config.blockConfirmations

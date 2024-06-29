@@ -18,13 +18,10 @@ module.exports = {
             { version: "0.8.19" },
         ]
     },
-    defaultNetwork: "hardhat",
+    defaultNetwork: "base",
     networks: {
         base: {
             url: BASE_RPC_URL || "",
-            gas: 2100000,
-            gasPrice: 8000000000,
-            gasLimit: 4000000,
             accounts: [PRIVATE_KEY],
             chainId: 8453,
             blockConfirmations: 6,
