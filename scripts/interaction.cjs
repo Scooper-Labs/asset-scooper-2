@@ -25,8 +25,9 @@ const main = async () => {
     ]);
 
     const to = deployer;
-    const contractAddress = "";
-    const assetScooper = await ethers.getContractAt("IAssetScooper", contractAddress);
+    // const contractAddress = 0x2Be3f47F734650423fc6Ba361860249A564C892b;
+    const assetScooper = await ethers.getContractAt()
+    // const assetScooper = await ethers.getContract("AssetScooper", deployer);
 
     const approvedValue = ethers.parseEther("5");
 
