@@ -3,8 +3,6 @@ const deployer = getNamedAccounts().deployer;
 
 const main = async () => {
     // const [signer1, signer2] = await ethers.getSigners();
-
-
     const ai_Inu = 0x8853F0c059C27527d33D02378E5E4F6d5afB574a;
     const usdc = 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913;
     const sofi = 0x703D57164CA270b0B330A87FD159CfEF1490c0a5;

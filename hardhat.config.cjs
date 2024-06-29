@@ -14,7 +14,8 @@ module.exports = {
             { version: "0.8.20" },
             { version: "0.8.4" },
             { version: "0.6.6" },
-            { version: "0.6.0" }
+            { version: "0.6.0" },
+            { version: "0.8.19" },
         ]
     },
     defaultNetwork: "hardhat",
@@ -28,8 +29,8 @@ module.exports = {
             chainId: 8453,
             blockConfirmations: 6,
             ignition: {
-                maxFeePerGasLimit: 50_000_000_000n,
-                maxPriorityFeePerGas: 2_000_000_000n,
+                maxFeePerGasLimit: 50_000_000_000,
+                maxPriorityFeePerGas: 2_000_000_000,
             },
         }
     },
