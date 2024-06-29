@@ -22,7 +22,7 @@ const deployAssetScooper = async ({ getNamedAccounts, deployments }) => {
     log("...........................................................");
     log(assetScooper.address);
 
-    if (!chainId && (chainId == 8453) && ETHERSCAN_APIKEY) {
+    if (!(chainId == 31337) && (chainId == 8453) && ETHERSCAN_APIKEY) {
         await verify(assetScooper.address, args);
     }
 }
