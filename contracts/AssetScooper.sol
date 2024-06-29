@@ -12,10 +12,6 @@ contract AssetScooper is ReentrancyGuard {
 
     address private immutable i_owner;
 
-    IUniswapV2Router02 private immutable i_uniswapV2Router;
-
-    IUniswapV2Factory private immutable i_uniswapV2Factory;
-
     string private constant i_version = "1.0.0";
 
     bytes4 private constant interfaceId = 0x01ffc9a7;
@@ -24,7 +20,7 @@ contract AssetScooper is ReentrancyGuard {
 
     address private constant factory = 0x8909Dc15e40173Ff4699343b6eB8132c65e18eC6;
 
-    event TokenSwapped(address indexed token, uint amountIn, uint amountOut);
+    event TokenSwapped(address indexed tokenA,address indexed tokenB, uint256 amountIn, uint amountOut);
     
     error AssetScooper__AddressZero();
     error AssetScooper__MisMatchToken();
@@ -55,7 +51,7 @@ contract AssetScooper is ReentrancyGuard {
         return abi.decode(data, (bool));
     }
 
-    function _checkIfPairExists(address _factory, address tokenAddress) internal view returns (bool) {
+    function _checkIfPairExists(address _factory, address tokenAddress) internal pure returns (bool) {
         address pairAddress = UniswapV2Library.pairFor(_factory, tokenAddress, weth);
         return pairAddress != address(0);
     }
