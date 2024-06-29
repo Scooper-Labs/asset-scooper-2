@@ -25,7 +25,7 @@ const main = async () => {
     ]);
 
     const to = deployer;
-    const contractAddress = 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512;
+    const contractAddress = "";
     const assetScooper = await ethers.getContractAt("IAssetScooper", contractAddress);
 
     const approvedValue = ethers.parseEther("5");
@@ -36,26 +36,15 @@ const main = async () => {
             .connect(tokenSigner)
             .approve(contractAddress, approvedValue);
 
-        await approve.wait();
+        await approve.wait(6);
     }
 
     console.log(`Approved ${approvedValue} tokens for AssetScooper.`);
 
-    // // Balance Before
-
-    // for (i = 0; i < tokensArray.length; i++) {
-    //     const token = tokensArray[i];
-    //     const balanceBefore = await token.balanceOf()
-    // }
-    // console.log(ethers.formatUnits(String(await usdtContract.balanceOf(to)), 6));
-    // console.log(
-    //     ethers.formatUnits(String(await quantContract.balanceOf(to)), 18)
-    // );
-
     const owner = assetScooper.owner();
     console.log(owner);
     const swap = await assetScooper.connect(tokenSigner).sweepTokens(tokenAddresses, 0);
-
+    await swap.wait(6);
 
 };
 
