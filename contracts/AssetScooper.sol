@@ -32,6 +32,7 @@ contract AssetScooper is ReentrancyGuard {
     error AssetScooper__UnsuccessfulDecimalCall();
     error AssetScooper_PairDoesNotExist();
     error AssetScooper__InsufficientBalance();
+    error AssetScooper__MisMatchLength();
 
     constructor() {
         i_owner = msg.sender;
@@ -69,22 +70,25 @@ contract AssetScooper is ReentrancyGuard {
         tokenBalance = abi.decode(data, (uint256));
     }
 
-    function sweepTokens(address[] calldata tokenAddress, uint256 minAmountOut) public nonReentrant {
+    function sweepTokens(address[] calldata tokenAddress, uint256[] calldata minAmountOut) public nonReentrant {
         if(tokenAddress.length == 0) revert AssetScooper__ZeroLengthArray();
         if(msg.sender == address(0)) revert AssetScooper__AddressZero();
+        if(tokenAddress.length != minAmountOut.length) revert AssetScooper__MisMatchLength();
 
         address tokenAddr;
+        uint256 minimumOutputAmount;
 
         for (uint256 i = 0; i < tokenAddress.length; i++) {
             tokenAddr = tokenAddress[i];
+            minimumOutputAmount = minAmountOut[i];
         }
 
         address pairAddress = UniswapV2Library.pairFor(factory, tokenAddr, weth);
 
-        _swap(pairAddress, minAmountOut);
+        _swap(pairAddress, minimumOutputAmount);
     }
 
-    function _swap(address pairAddress, uint256 minAmountOut) internal nonReentrant {
+    function _swap(address pairAddress, uint256 minimumOutputAmount) internal nonReentrant {
         IUniswapV2Pair pair = IUniswapV2Pair(pairAddress);
 
         address tokenA = pair.token0();
@@ -112,7 +116,7 @@ contract AssetScooper is ReentrancyGuard {
             amountOut = UniswapV2Library.getAmountOut(amountIn, reserveA, reserveB);
         }
         
-        if(amountOut < minAmountOut) revert AssetScooper__InsufficientOutputAmount();
+        if(amountOut < minimumOutputAmount) revert AssetScooper__InsufficientOutputAmount();
 
         TransferHelper.safeTransferFrom(tokenA, msg.sender, pairAddress, amountIn);
 
