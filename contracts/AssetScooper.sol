@@ -33,6 +33,7 @@ contract AssetScooper is ReentrancyGuard {
     error AssetScooper_PairDoesNotExist();
     error AssetScooper__InsufficientBalance();
     error AssetScooper__MisMatchLength();
+    error AssetScooper__UnsuccessfulSwapTx();
 
     constructor() {
         i_owner = msg.sender;
@@ -77,18 +78,24 @@ contract AssetScooper is ReentrancyGuard {
 
         address tokenAddr;
         uint256 minimumOutputAmount;
+        uint256 totalEth;
 
         for (uint256 i = 0; i < tokenAddress.length; i++) {
             tokenAddr = tokenAddress[i];
             minimumOutputAmount = minAmountOut[i];
+
+            address pairAddress = UniswapV2Library.pairFor(factory, tokenAddr, weth);
+
+            _swap(pairAddress, minimumOutputAmount);
         }
 
-        address pairAddress = UniswapV2Library.pairFor(factory, tokenAddr, weth);
-
-        _swap(pairAddress, minimumOutputAmount);
+        totalEth = address
+        
+        (bool success, /*bytes memory data*/) = payable(msg.sender).call{value: totalEth}(new bytes(0));
+        if(!success) revert AssetScooper__UnsuccessfulSwapTx();
     }
 
-    function _swap(address pairAddress, uint256 minimumOutputAmount) internal nonReentrant {
+    function _swap(address pairAddress, uint256 minimumOutputAmount) internal nonReentrant returns(uint256) {
         IUniswapV2Pair pair = IUniswapV2Pair(pairAddress);
 
         address tokenA = pair.token0();
