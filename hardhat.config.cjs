@@ -18,7 +18,7 @@ module.exports = {
             { version: "0.8.19" },
         ]
     },
-    defaultNetwork: "hardhat",
+    defaultNetwork: "base",
     networks: {
         base: {
             url: BASE_RPC_URL || "",
