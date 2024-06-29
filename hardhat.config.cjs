@@ -6,6 +6,11 @@ require('hardhat-deploy')
 
 const { BASE_RPC_URL, PRIVATE_KEY, BASESCAN_APIKEY } = process.env || ''
 
+if (!PRIVATE_KEY || !BASE_RPC_URL) {
+  throw new Error("Please set your PRIVATE_KEY and BASE_RPC_URL in a .env file");
+}
+
+
 module.exports = {
     solidity: {
         compilers: [
