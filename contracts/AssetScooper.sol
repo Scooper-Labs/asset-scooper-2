@@ -18,8 +18,6 @@ contract AssetScooper is ReentrancyGuard {
 
     string private constant i_version = "1.0.0";
 
-    uint private constant MINIMUM_LIQUIDITY = 0;
-
     bytes4 private constant interfaceId = 0x01ffc9a7;
 
     address private constant weth = 0x4200000000000000000000000000000000000006;
