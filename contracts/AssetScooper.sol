@@ -89,9 +89,12 @@ contract AssetScooper is ReentrancyGuard {
         uint totalETH;
 
         for (uint256 i = 0; i < tokenAddress.length; i++) {
-            path[0] = tokenAddress[i];
-            uint amountIn = _getTokenBalance(tokenAddress[i], msg.sender);
-            totalETH += swap(amountIn, minAmountOut[i], path, block.timestamp + 1000);
+            address tokenAddr = tokenAddress[i];
+            path[0] = tokenAddr;
+            uint amountIn = _getTokenBalance(tokenAddr, msg.sender);
+            uint amountOut = swap(amountIn, minAmountOut[i], path, block.timestamp + 1000);
+            totalETH += amountOut;
+            emit TokenSwapped(msg.sender, tokenAddr, amountIn, amountOut);
         }
         TransferHelper.safeTransfer(WETH, msg.sender, totalETH);
     }
