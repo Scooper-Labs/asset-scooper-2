@@ -6,14 +6,11 @@ import './Interfaces/IUniswapV2Pair.sol';
 import './Lib/UniswapV2Library.sol';
 import './Lib/TransferHelper.sol';
 import 'solady/src/utils/ReentrancyGuard.sol';
-import {IWETH} from "./Interfaces/IWETH.sol";
 
 contract AssetScooper is ReentrancyGuard {
  address private immutable i_owner;
 
  string private constant i_version = '1.0.0';
-
- bytes4 private constant interfaceId = 0x01ffc9a7;
 
  address private constant WETH = 0x4200000000000000000000000000000000000006;
 
@@ -21,7 +18,7 @@ contract AssetScooper is ReentrancyGuard {
 
  event TokenSwapped(
   address indexed user,
-  address indexed tokenA,
+  address indexed tokenIn,
   uint256 amountIn,
   uint amountOut
  );
@@ -56,24 +53,6 @@ contract AssetScooper is ReentrancyGuard {
   return i_version;
  }
 
- function _checkIfERC20Token(
-  address tokenAddress
- ) internal view returns (bool) {
-  (bool success, bytes memory data) = tokenAddress.staticcall(
-   abi.encodeWithSignature('supportsInterface(bytes4)', interfaceId)
-  );
-  if (!success) revert AssetScooper__UnsupportedToken();
-  return abi.decode(data, (bool));
- }
-
- function _checkIfPairExists(
-  address _factory,
-  address tokenAddress
- ) internal pure returns (bool) {
-  address pairAddress = UniswapV2Library.pairFor(_factory, tokenAddress, WETH);
-  return pairAddress != address(0);
- }
-
  function _getAmountIn(
   address token,
   uint256 tokenBalance
@@ -96,84 +75,13 @@ contract AssetScooper is ReentrancyGuard {
   if (!success) revert AssetScooper__UnsuccessfulBalanceCall();
   tokenBalance = abi.decode(data, (uint256));
  }
-
-//  function sweepTokens(
-//   address[] calldata tokenAddress,
-//   uint256[] calldata minAmountOut
-//  ) public nonReentrant {
-//   if (tokenAddress.length == 0) revert AssetScooper__ZeroLengthArray();
-//   if (tokenAddress.length != minAmountOut.length)
-//    revert AssetScooper__MisMatchLength();
-
-//   uint256 totalEth;
-
-//   for (uint256 i = 0; i < tokenAddress.length; i++) {
-//    address pairAddress = UniswapV2Library.pairFor(
-//     factory,
-//     tokenAddress[i],
-//     weth
-//    );
-
-//    totalEth += _swap(pairAddress, minAmountOut[i]);
-//   }
-
-//   TransferHelper.safeTransferETH(msg.sender, totalEth);
-//  }
-
-//  function _swap(
-//   address pairAddress,
-//   uint256 minimumOutputAmount
-//  ) internal nonReentrant returns (uint256 amountOut) {
-//   IUniswapV2Pair pair = IUniswapV2Pair(pairAddress);
-
-//   address tokenA = pair.token0();
-//   address tokenB = pair.token1();
-
-//   if ((tokenA == address(0)) && (tokenB == address(0)))
-//    revert AssetScooper__AddressZero();
-//   if ((tokenA == weth) && (tokenB == tokenA))
-//    revert AssetScooper__MisMatchToken();
-
-//   if (!_checkIfERC20Token(tokenA)) revert AssetScooper__UnsupportedToken();
-//   if (!_checkIfPairExists(pair.factory(), tokenA))
-//    revert AssetScooper_PairDoesNotExist();
-
-//   uint256 tokenBalance = _getTokenBalance(tokenA, msg.sender);
-
-//   if (tokenBalance < 0) revert AssetScooper__InsufficientBalance();
-
-//   uint256 amountIn = _getAmountIn(tokenA, tokenBalance);
-
-//   (uint reserveA, uint reserveB) = UniswapV2Library.getReserves(
-//    pair.factory(),
-//    tokenA,
-//    tokenB
-//   );
-
-//   uint256 pairBalanceA = _getTokenBalance(tokenA, pairAddress);
-//   uint256 pairBalanceB = _getTokenBalance(tokenB, pairAddress);
-
-//   if (pairBalanceB > pairBalanceA) {
-//    amountOut = UniswapV2Library.getAmountOut(amountIn, reserveA, reserveB);
-//   }
-
-//   if (amountOut < minimumOutputAmount)
-//    revert AssetScooper__InsufficientOutputAmount();
-
-//   TransferHelper.safeTransferFrom(tokenA, msg.sender, pairAddress, amountIn);
-
-//   if (pairBalanceB > pairBalanceA) {
-//    pair.swap(0, amountOut, address(this), new bytes(0));
-//   }
-
-//   emit TokenSwapped(msg.sender, tokenA, amountIn, amountOut);
-//  }
-
-
-   function sweepTokens(
-        address[] calldata tokenAddress
+ 
+    function sweepTokens(
+        address[] calldata tokenAddress,
+        uint256[] calldata minAmountOut
     ) public nonReentrant {
         if (tokenAddress.length == 0) revert AssetScooper__ZeroLengthArray();
+        if (tokenAddress.length != minAmountOut.length) revert AssetScooper__MisMatchLength();
 
         address[] memory path = new address[](2);
         path[1] = WETH;
@@ -183,11 +91,11 @@ contract AssetScooper is ReentrancyGuard {
         for (uint256 i = 0; i < tokenAddress.length; i++) {
             path[0] = tokenAddress[i];
             uint amountIn = _getTokenBalance(tokenAddress[i], msg.sender);
-            totalETH += swap(amountIn, 0, path, block.timestamp + 1000);
+            totalETH += swap(amountIn, minAmountOut[i], path, block.timestamp + 1000);
         }
+        TransferHelper.safeTransfer(WETH, msg.sender, totalETH);
     }
 
-    
      function swap(uint amountIn, uint amountOutMin, address[] memory path, uint deadline) private ensure(deadline) returns (uint amount) {
         require(path[path.length - 1] == WETH, 'UniswapV2Router: INVALID_PATH');
         uint[] memory amounts = UniswapV2Library.getAmountsOut(factory, amountIn, path);
@@ -199,12 +107,8 @@ contract AssetScooper is ReentrancyGuard {
         return amounts[amounts.length - 1];
     }
 
-    function withdraw() public {
-        uint balance = _getTokenBalance(WETH, address(this));
-        IWETH(WETH).withdraw(balance);
-    }
 
-        function _swap(uint[] memory amounts, address[] memory path, address _to) internal virtual {
+    function _swap(uint[] memory amounts, address[] memory path, address _to) internal virtual {
         for (uint i; i < path.length - 1; i++) {
             (address input, address output) = (path[i], path[i + 1]);
             (address token0,) = UniswapV2Library.sortTokens(input, output);
@@ -216,3 +120,4 @@ contract AssetScooper is ReentrancyGuard {
             );
         }
     }
+}
