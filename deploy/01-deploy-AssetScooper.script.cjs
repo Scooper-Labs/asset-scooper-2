@@ -2,7 +2,7 @@ const { getNamedAccounts, deployments, network } = require("hardhat");
 const { verify } = require('../utils/verify.cjs');
 const { checkDeployment } = require("../utils/checkDeployment.cjs");
 const { developmentChains } = require("../helper-hardhat-config.cjs");
-const { ETHERSCAN_APIKEY } = process.env || "";
+const { BASESCAN_APIKEY } = process.env || "";
 
 const deployAssetScooper = async ({ getNamedAccounts, deployments }) => {
     const { deploy, log } = deployments;
@@ -13,7 +13,6 @@ const deployAssetScooper = async ({ getNamedAccounts, deployments }) => {
 
     const assetScooper = await deploy("AssetScooper", {
         from: deployer,
-        gasLimit: 5000000,
         args: args,
         log: true,
         blockConfirmations: network.config.blockConfirmations
@@ -24,7 +23,7 @@ const deployAssetScooper = async ({ getNamedAccounts, deployments }) => {
     log(assetScooper.address);
     await checkDeployment(assetScooper.address);
 
-    if (!(chainId == 31337) && (chainId == 8453) && ETHERSCAN_APIKEY) {
+    if ((chainId == 8453) && BASESCAN_APIKEY) {
         await verify(assetScooper.address, args);
     }
 }
