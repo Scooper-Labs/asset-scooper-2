@@ -6,7 +6,6 @@ import './Interfaces/IUniswapV2Pair.sol';
 import './Lib/UniswapV2Library.sol';
 import './Lib/TransferHelper.sol';
 import 'solady/src/utils/ReentrancyGuard.sol';
-import {IWETH} from "./Interfaces/IWETH.sol";
 
 contract AssetScooper is ReentrancyGuard {
  address private immutable i_owner;
@@ -19,7 +18,7 @@ contract AssetScooper is ReentrancyGuard {
 
  event TokenSwapped(
   address indexed user,
-  address indexed tokenA,
+  address indexed tokenIn,
   uint256 amountIn,
   uint amountOut
  );
@@ -121,3 +120,4 @@ contract AssetScooper is ReentrancyGuard {
             );
         }
     }
+}
