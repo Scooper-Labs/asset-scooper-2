@@ -1,2 +1,2 @@
-### contract address Asset Scooper = 0x03b795209750Ac00CA176022157e08A4254Da78c
-### contract on basescan = https://basescan.org/address/0x03b795209750Ac00CA176022157e08A4254Da78c
+### contract address Asset Scooper = 0x699Dc58648371EDB907b1FCfbf69EDadC335F353
+### contract on basescan = https://basescan.org/address/0x699Dc58648371EDB907b1FCfbf69EDadC335F353
