@@ -121,5 +121,3 @@ contract AssetScooper is ReentrancyGuard {
             );
         }
     }
-
-}
